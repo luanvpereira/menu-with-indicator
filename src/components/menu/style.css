@@ -1,0 +1,55 @@
+@keyframes App-logo-spin {
+    from {
+      transform: rotate(0deg);
+    }
+    to {
+      transform: rotate(360deg);
+    }
+  }
+  
+
+.menu {
+    background-color: #282c34;
+    width: 100%;
+}
+
+.menuContainer {
+    max-width: 1200px;
+    margin: 0 auto;
+    list-style: none;
+    display: flex;
+    justify-content: center;
+    text-align: center;
+    padding: 0;
+    position: relative;
+}
+
+.menuLogo {
+    animation: App-logo-spin infinite 20s linear;
+    height: 100px;
+    margin: 0 auto;
+    display: block;
+    pointer-events: none;
+}
+
+.menuIndicator {
+    height: 3px;
+    background-color: #fff;
+    position: absolute;
+    bottom: 10px;
+    left: 0;
+    transition: transform 0.3s ease, width 0.25s ease-out 0.05s;
+}
+
+.menu > li {
+    margin: 0 10px;
+}
+
+.menu a {
+    display: inline-block;
+    padding: 20px 10px 15px;
+    text-transform: uppercase;
+    text-decoration: none;
+    font-weight: 300;
+    color: #61dafb;
+}
