@@ -41,6 +41,7 @@ class Menu extends React.PureComponent {
 	}
 
 	componentDidUpdate(prevProps) {
+		/* istanbul ignore else */
 		if (
 			JSON.stringify(prevProps.links) !== JSON.stringify(this.props.links)
 		) {
