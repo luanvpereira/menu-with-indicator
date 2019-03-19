@@ -32,7 +32,7 @@ class Menu extends React.PureComponent {
 				link: PropTypes.string.isRequired
 			})
 		).isRequired,
-		handleClick: PropTypes.func
+		handleChange: PropTypes.func
 	}
 
 	static defaultProps = {
