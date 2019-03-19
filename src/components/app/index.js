@@ -1,4 +1,4 @@
-import React, { Component } from 'react';
+import React from 'react';
 
 import './style.css';
 import Menu from '../menu';
@@ -6,26 +6,22 @@ import Menu from '../menu';
 const links = [
 	{
 		label: 'Home',
-		link: '/home'
+		link: '#/'
 	},
 	{
 		label: 'About',
-		link: '/about'
+		link: '#/about'
 	},
 	{
 		label: 'Contact',
-		link: '/contact'
+		link: '#/contact'
 	},
 	{
 		label: 'Map',
-		link: '/map'
+		link: '#/map'
 	}
 ];
 
-class App extends Component {
-	render() {
-		return <Menu links={links} />;
-	}
-}
+const App = () => <Menu links={links} />;
 
 export default App;

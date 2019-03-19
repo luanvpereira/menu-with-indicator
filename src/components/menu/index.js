@@ -1,5 +1,6 @@
 import React from 'react';
 import PropTypes from 'prop-types';
+import { debounce } from 'lodash';
 
 import './style.css';
 import logo from './logo.svg';
@@ -14,9 +15,11 @@ class Menu extends React.PureComponent {
 			showIndicator: false
 		};
 
-		this.handleClick = this.handleClick.bind(this);
-		this.onResize = this.onResize.bind(this);
 		this.listContainer = React.createRef();
+
+		this.handleClick = this.handleClick.bind(this);
+		this.handleResize = this.handleResize.bind(this);
+		this.debouncedResize = debounce(this.handleResize, 50);
 
 		this.bounds = [];
 		this.currentIndex = 0;
@@ -30,50 +33,40 @@ class Menu extends React.PureComponent {
 			})
 		).isRequired,
 		handleClick: PropTypes.func
-	};
+	}
+
+	static defaultProps = {
+		handleChange: () => {}
+	}
 
 	componentDidMount() {
 		this.setAnchorsBounds();
 		this.setIndicatorPositionByIndex(this.currentIndex);
-		this.showIndicator();
+		this.toggleIndicator();
 
-		window.addEventListener('resize', this.onResize, false);
-	}
-
-	componentDidUpdate(prevProps) {
-		/* istanbul ignore else */
-		if (
-			JSON.stringify(prevProps.links) !== JSON.stringify(this.props.links)
-		) {
-			this.setAnchorsBounds();
-			this.setIndicatorPositionByIndex(0);
-		}
+		window.addEventListener('resize', this.debouncedResize, false);
 	}
 
 	componentWillUnmount() {
-		window.removeEventListener('resize', this.onResize, false);
+		window.removeEventListener('resize', this.debouncedResize, false);
 	}
 
-	onResize() {
+	handleResize() {
 		this.setAnchorsBounds();
 		this.setIndicatorPositionByIndex(this.currentIndex);
 	}
 
-	getAnchorsByListContainer() {
-		return this.listContainer.current.querySelectorAll('a');
-	}
-
-	showIndicator() {
+	toggleIndicator(showIndicator = true) {
 		this.setState({
-			showIndicator: true
+			showIndicator
 		});
 	}
 
 	setAnchorsBounds() {
-		const anchors = this.getAnchorsByListContainer();
+		const anchors = this.listContainer.current.querySelectorAll('a');
 		this.bounds = Array.from(anchors)
 			.map(item => item.getBoundingClientRect())
-			.map(({ x, width }) => ({
+			.map(({x, width}) => ({
 				width,
 				x: this.fixAnchorLeftPosition(x)
 			}));
@@ -83,7 +76,7 @@ class Menu extends React.PureComponent {
 		const { x, width } = this.bounds[index];
 
 		this.setState({
-			indicatorLeft: x,
+			indicatorLeft: x,	
 			indicatorWidth: width
 		});
 	}
@@ -99,17 +92,10 @@ class Menu extends React.PureComponent {
 	}
 
 	handleClick(index) {
-		return e => {
-			e.preventDefault();
-
-			if (this.currentIndex !== index) {
-				this.changeIndicator(index);
-
-				if (this.props.handleClick) {
-					this.props.handleClick(index, e);
-				}
-			}
-		};
+		if (this.currentIndex !== index) {
+			this.changeIndicator(index);
+			this.props.handleChange(this.props.links[index], index);
+		}
 	}
 
 	render() {
@@ -126,7 +112,7 @@ class Menu extends React.PureComponent {
 				<ul className="menuContainer" ref={this.listContainer}>
 					{this.props.links.map(({ label, link }, index) => (
 						<li key={index}>
-							<a onClick={this.handleClick(index)} href={link}>
+							<a onClick={this.handleClick.bind(this, index)} href={link}>
 								{label}
 							</a>
 						</li>
