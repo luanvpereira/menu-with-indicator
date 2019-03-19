@@ -20,8 +20,8 @@ class Menu extends React.PureComponent {
 		this.listContainer = React.createRef();
 
 		this.handleClick = this.handleClick.bind(this);
-		this.handleResize = this.handleResize.bind(this);
-		this.debouncedResize = debounce(this.handleResize, 50);
+		this.init = this.init.bind(this);
+		this.debouncedResize = debounce(this.init, 50);
 
 		this.indicatorPositions = [];
 		this.containerBound = {};
@@ -43,8 +43,7 @@ class Menu extends React.PureComponent {
 	}
 
 	componentDidMount() {
-		this.getDimensions();
-		this.setIndicatorPositionByIndex(this.currentIndex);
+		this.init();
 		this.toggleIndicator();
 
 		window.addEventListener('resize', this.debouncedResize, false);
@@ -52,6 +51,11 @@ class Menu extends React.PureComponent {
 
 	componentWillUnmount() {
 		window.removeEventListener('resize', this.debouncedResize, false);
+	}
+
+	init() {
+		this.getDimensions();
+		this.setIndicatorPositionByIndex(this.currentIndex);
 	}
 
 	getDimensions() {
@@ -81,11 +85,6 @@ class Menu extends React.PureComponent {
 		});
 	}
 
-	handleResize() {
-		this.getDimensions();
-		this.setIndicatorPositionByIndex(this.currentIndex);
-	}
-
 	setIndicatorPositionByIndex(index) {
 		const { indicatorLeft, indicatorRight } = this.indicatorPositions[index];
 
@@ -100,7 +99,7 @@ class Menu extends React.PureComponent {
 		return left - container.getBoundingClientRect().x;
 	}
 
-	async changeAnimationDirection(index, callback) {
+	changeAnimationDirection(index, callback) {
 		return new Promise(resolve => {
 			this.setState({
 				isLeftToRight: index > this.currentIndex
