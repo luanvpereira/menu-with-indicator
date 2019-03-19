@@ -38,7 +38,17 @@
     position: absolute;
     bottom: 10px;
     left: 0;
-    transition: transform 0.3s ease, width 0.25s ease-out 0.05s;
+    right: 0;
+    will-change: left, right;
+    transition: left 0.25s ease-out 0.15s, right 0.25s ease-out;
+}
+
+.menuIndicatorAnimLeftToRight {
+    transition: left 0.25s ease-out 0.15s, right 0.25s ease-out;
+}
+
+.menuIndicatorAnimRightToLeft {
+    transition: right 0.25s ease-out 0.15s, left 0.25s ease-out;
 }
 
 .menu > li {

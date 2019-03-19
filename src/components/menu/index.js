@@ -1,6 +1,7 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 import { debounce } from 'lodash';
+import classNames from 'classnames';
 
 import './style.css';
 import logo from './logo.svg';
@@ -10,9 +11,10 @@ class Menu extends React.PureComponent {
 		super(props);
 
 		this.state = {
-			indicatorWidth: 0,
 			indicatorLeft: 0,
-			showIndicator: false
+			indicatorRight: 0,
+			showIndicator: false,
+			isLeftToRight: true
 		};
 
 		this.listContainer = React.createRef();
@@ -21,7 +23,8 @@ class Menu extends React.PureComponent {
 		this.handleResize = this.handleResize.bind(this);
 		this.debouncedResize = debounce(this.handleResize, 50);
 
-		this.bounds = [];
+		this.indicatorPositions = [];
+		this.containerBound = {};
 		this.currentIndex = 0;
 	}
 
@@ -40,7 +43,7 @@ class Menu extends React.PureComponent {
 	}
 
 	componentDidMount() {
-		this.setAnchorsBounds();
+		this.getDimensions();
 		this.setIndicatorPositionByIndex(this.currentIndex);
 		this.toggleIndicator();
 
@@ -51,9 +54,25 @@ class Menu extends React.PureComponent {
 		window.removeEventListener('resize', this.debouncedResize, false);
 	}
 
-	handleResize() {
-		this.setAnchorsBounds();
-		this.setIndicatorPositionByIndex(this.currentIndex);
+	getDimensions() {
+		this.containerBound = this.listContainer.current.getBoundingClientRect();
+		this.indicatorPositions = this.getIndicatorPositions();
+	}
+
+	getIndicatorPositions() {
+		const anchors = this.listContainer.current.querySelectorAll('a');
+	
+		return Array.from(anchors)
+			.map(item => item.getBoundingClientRect())
+			.map(({ width, left }) => {
+				const indicatorLeft = this.fixAnchorLeftPosition(left);
+				const indicatorRight = this.fixAnchorLeftPosition(this.containerBound.right) - indicatorLeft - width;
+		
+				return {
+					indicatorLeft,
+					indicatorRight
+				}
+			})
 	}
 
 	toggleIndicator(showIndicator = true) {
@@ -62,22 +81,17 @@ class Menu extends React.PureComponent {
 		});
 	}
 
-	setAnchorsBounds() {
-		const anchors = this.listContainer.current.querySelectorAll('a');
-		this.bounds = Array.from(anchors)
-			.map(item => item.getBoundingClientRect())
-			.map(({x, width}) => ({
-				width,
-				x: this.fixAnchorLeftPosition(x)
-			}));
+	handleResize() {
+		this.getDimensions();
+		this.setIndicatorPositionByIndex(this.currentIndex);
 	}
 
 	setIndicatorPositionByIndex(index) {
-		const { x, width } = this.bounds[index];
+		const { indicatorLeft, indicatorRight } = this.indicatorPositions[index];
 
 		this.setState({
-			indicatorLeft: x,	
-			indicatorWidth: width
+			indicatorLeft,
+			indicatorRight
 		});
 	}
 
@@ -86,25 +100,44 @@ class Menu extends React.PureComponent {
 		return left - container.getBoundingClientRect().x;
 	}
 
-	changeIndicator(index) {
+	async changeAnimationDirection(index, callback) {
+		return new Promise(resolve => {
+			this.setState({
+				isLeftToRight: index > this.currentIndex
+			}, resolve);
+		})
+	}
+
+	async changeIndicator(index) {
+		await this.changeAnimationDirection(index);
 		this.setIndicatorPositionByIndex(index);
 		this.currentIndex = index;
 	}
 
-	handleClick(index) {
+	handleClick(index, e) {
 		if (this.currentIndex !== index) {
 			this.changeIndicator(index);
-			this.props.handleChange(this.props.links[index], index);
+			this.props.handleChange(this.props.links[index], index, e);
 		}
 	}
 
 	render() {
-		const { indicatorLeft, indicatorWidth, showIndicator } = this.state;
+		const {
+			indicatorLeft,
+			indicatorRight,
+			isLeftToRight,
+			showIndicator
+		} = this.state;
 
 		const indicatorStyle = {
-			transform: `translateX(${indicatorLeft}px)`,
-			width: `${indicatorWidth}px`
+			left: `${indicatorLeft}px`,
+			right: `${indicatorRight}px`,
 		};
+
+		const menuIndicator = classNames('menuIndicator', {
+			'menuIndicatorAnimLeftToRight': isLeftToRight,
+			'menuIndicatorAnimRightToLeft': !isLeftToRight
+		});
 
 		return (
 			<nav className="menu">
@@ -119,7 +152,7 @@ class Menu extends React.PureComponent {
 					))}
 					{showIndicator && (
 						<span
-							className="menuIndicator"
+							className={menuIndicator}
 							style={indicatorStyle}
 						/>
 					)}
