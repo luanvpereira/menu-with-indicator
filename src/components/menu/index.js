@@ -23,7 +23,7 @@ class Menu extends React.PureComponent {
 		this.init = this.init.bind(this);
 		this.debouncedResize = debounce(this.init, 50);
 
-		this.indicatorPositions = [];
+		this.indicatorsPositions = [];
 		this.containerBound = {};
 		this.currentIndex = 0;
 	}
@@ -60,17 +60,17 @@ class Menu extends React.PureComponent {
 
 	getDimensions() {
 		this.containerBound = this.listContainer.current.getBoundingClientRect();
-		this.indicatorPositions = this.getIndicatorPositions();
+		this.indicatorsPositions = this.getIndicatorsPositions();
 	}
 
-	getIndicatorPositions() {
+	getIndicatorsPositions() {
 		const anchors = this.listContainer.current.querySelectorAll('a');
-	
+
 		return Array.from(anchors)
 			.map(item => item.getBoundingClientRect())
 			.map(({ width, left }) => {
 				const indicatorLeft = this.fixAnchorLeftPosition(left);
-				const indicatorRight = this.fixAnchorLeftPosition(this.containerBound.right) - indicatorLeft - width;
+				const indicatorRight = this.fixAnchorLeftPosition(this.containerBound.right - indicatorLeft - width);
 		
 				return {
 					indicatorLeft,
@@ -86,7 +86,7 @@ class Menu extends React.PureComponent {
 	}
 
 	setIndicatorPositionByIndex(index) {
-		const { indicatorLeft, indicatorRight } = this.indicatorPositions[index];
+		const { indicatorLeft, indicatorRight } = this.indicatorsPositions[index];
 
 		this.setState({
 			indicatorLeft,
@@ -95,11 +95,10 @@ class Menu extends React.PureComponent {
 	}
 
 	fixAnchorLeftPosition(left) {
-		const container = this.listContainer.current;
-		return left - container.getBoundingClientRect().x;
+		return left - this.containerBound.x;
 	}
 
-	changeAnimationDirection(index, callback) {
+	changeAnimationDirection(index) {
 		return new Promise(resolve => {
 			this.setState({
 				isLeftToRight: index > this.currentIndex
