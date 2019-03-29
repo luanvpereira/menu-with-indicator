@@ -99,7 +99,7 @@ class Menu extends React.PureComponent {
 	}
 
 	fixAnchorLeftPosition(left) {
-		return left - this.containerBound.x;
+		return left - this.containerBound.left;
 	}
 
 	changeAnimationDirection(index) {

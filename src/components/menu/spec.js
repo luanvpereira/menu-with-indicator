@@ -25,56 +25,27 @@ const defaultProps = {
 };
 
 const containerListBound = {
-	bottom: 153,
-	height: 153,
 	left: 0,
 	right: 492,
-	top: 0,
-	width: 492,
-	x: 0,
-	y: 0
+	width: 492
 };
 
 const anchorsBounds = [
 	{
-		bottom: 153,
-		height: 53,
 		left: 99.03125,
-		right: 167.03125,
-		top: 100,
-		width: 68,
-		x: 99.03125,
-		y: 100
+		width: 68
 	},
 	{
-		bottom: 153,
-		height: 53,
 		left: 167.03125,
-		right: 242.15625,
-		top: 100,
-		width: 75.125,
-		x: 167.03125,
-		y: 100
+		width: 75.125
 	},
 	{
-		bottom: 153,
-		height: 53,
 		left: 242.15625,
-		right: 338.296875,
-		top: 100,
-		width: 96.140625,
-		x: 242.15625,
-		y: 100
+		width: 96.140625
 	},
 	{
-		bottom: 153,
-		height: 53,
 		left: 338.296875,
-		right: 392.96875,
-		top: 100,
-		width: 54.671875,
-		x: 338.296875,
-		y: 100
+		width: 54.671875
 	}
 ];
 
