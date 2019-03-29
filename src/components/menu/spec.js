@@ -126,12 +126,12 @@ describe('<Menu/>', () => {
 		});
 
 		it('should set value returned from #getIndicatorsPositions in `indicatorPositions` property', () => {
-			const spy = jest
-				.spyOn(Menu.prototype, 'getIndicatorsPositions')
-				.mockImplementationOnce(() => indicatorsPositions);
+			jest.spyOn(
+				Menu.prototype,
+				'getIndicatorsPositions'
+			).mockImplementationOnce(() => indicatorsPositions);
 			const instance = getWrapper().instance();
 			expect(instance.indicatorsPositions).toEqual(indicatorsPositions);
-			spy.mockRestore();
 		});
 	});
 
@@ -171,7 +171,7 @@ describe('<Menu/>', () => {
 	});
 
 	describe('#setIndicatorPositionByIndex', () => {
-		beforeEach(() => {
+		beforeAll(() => {
 			jest.clearAllMocks();
 			jest.spyOn(Element.prototype, 'getBoundingClientRect')
 				.mockImplementationOnce(() => containerListBound)
@@ -198,16 +198,6 @@ describe('<Menu/>', () => {
 	});
 
 	describe('#fixAnchorLeftPosition', () => {
-		beforeEach(() => {
-			jest.clearAllMocks();
-			jest.spyOn(Element.prototype, 'getBoundingClientRect')
-				.mockImplementationOnce(() => containerListBound)
-				.mockImplementationOnce(() => anchorsBounds[0])
-				.mockImplementationOnce(() => anchorsBounds[1])
-				.mockImplementationOnce(() => anchorsBounds[2])
-				.mockImplementationOnce(() => anchorsBounds[3]);
-		});
-
 		it('should fix `left` parameter number by container list x axis', () => {
 			const instance = getWrapper().instance();
 			expect(instance.fixAnchorLeftPosition(anchorsBounds[0].left)).toBe(
