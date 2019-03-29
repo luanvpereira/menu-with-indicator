@@ -36,11 +36,11 @@ class Menu extends React.PureComponent {
 			})
 		).isRequired,
 		handleChange: PropTypes.func
-	}
+	};
 
 	static defaultProps = {
 		handleChange: () => {}
-	}
+	};
 
 	componentDidMount() {
 		this.init();
@@ -70,13 +70,15 @@ class Menu extends React.PureComponent {
 			.map(item => item.getBoundingClientRect())
 			.map(({ width, left }) => {
 				const indicatorLeft = this.fixAnchorLeftPosition(left);
-				const indicatorRight = this.fixAnchorLeftPosition(this.containerBound.right - indicatorLeft - width);
-		
+				const indicatorRight = this.fixAnchorLeftPosition(
+					this.containerBound.right - indicatorLeft - width
+				);
+
 				return {
 					indicatorLeft,
 					indicatorRight
-				}
-			})
+				};
+			});
 	}
 
 	toggleIndicator(showIndicator = true) {
@@ -86,7 +88,9 @@ class Menu extends React.PureComponent {
 	}
 
 	setIndicatorPositionByIndex(index) {
-		const { indicatorLeft, indicatorRight } = this.indicatorsPositions[index];
+		const { indicatorLeft, indicatorRight } = this.indicatorsPositions[
+			index
+		];
 
 		this.setState({
 			indicatorLeft,
@@ -100,10 +104,13 @@ class Menu extends React.PureComponent {
 
 	changeAnimationDirection(index) {
 		return new Promise(resolve => {
-			this.setState({
-				isLeftToRight: index > this.currentIndex
-			}, resolve);
-		})
+			this.setState(
+				{
+					isLeftToRight: index > this.currentIndex
+				},
+				resolve
+			);
+		});
 	}
 
 	async changeIndicator(index) {
@@ -113,6 +120,7 @@ class Menu extends React.PureComponent {
 	}
 
 	handleClick(index, e) {
+		/* istanbul ignore else */
 		if (this.currentIndex !== index) {
 			this.changeIndicator(index);
 			this.props.handleChange(this.props.links[index], index, e);
@@ -129,12 +137,12 @@ class Menu extends React.PureComponent {
 
 		const indicatorStyle = {
 			left: `${indicatorLeft}px`,
-			right: `${indicatorRight}px`,
+			right: `${indicatorRight}px`
 		};
 
 		const menuIndicator = classNames('menuIndicator', {
-			'menuIndicatorAnimLeftToRight': isLeftToRight,
-			'menuIndicatorAnimRightToLeft': !isLeftToRight
+			menuIndicatorAnimLeftToRight: isLeftToRight,
+			menuIndicatorAnimRightToLeft: !isLeftToRight
 		});
 
 		return (
@@ -143,7 +151,10 @@ class Menu extends React.PureComponent {
 				<ul className="menuContainer" ref={this.listContainer}>
 					{this.props.links.map(({ label, link }, index) => (
 						<li key={index}>
-							<a onClick={this.handleClick.bind(this, index)} href={link}>
+							<a
+								onClick={this.handleClick.bind(this, index)}
+								href={link}
+							>
 								{label}
 							</a>
 						</li>

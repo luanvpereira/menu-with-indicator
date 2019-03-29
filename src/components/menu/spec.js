@@ -104,7 +104,11 @@ describe('<Menu/>', () => {
 		it('should call #addEventListener', () => {
 			const spy = jest.spyOn(global, 'addEventListener');
 			const instace = getWrapper().instance();
-			expect(spy).toHaveBeenCalledWith('resize', instace.debouncedResize, false);
+			expect(spy).toHaveBeenCalledWith(
+				'resize',
+				instace.debouncedResize,
+				false
+			);
 		});
 	});
 
@@ -114,7 +118,11 @@ describe('<Menu/>', () => {
 			const wrapper = getWrapper();
 			const instance = wrapper.instance();
 			wrapper.unmount();
-			expect(spy).toHaveBeenCalledWith('resize', instance.debouncedResize, false);
+			expect(spy).toHaveBeenCalledWith(
+				'resize',
+				instance.debouncedResize,
+				false
+			);
 		});
 	});
 
@@ -126,7 +134,10 @@ describe('<Menu/>', () => {
 		});
 
 		it('should call #setIndicatorPositionByIndex', () => {
-			const spy = jest.spyOn(Menu.prototype, 'setIndicatorPositionByIndex');
+			const spy = jest.spyOn(
+				Menu.prototype,
+				'setIndicatorPositionByIndex'
+			);
 			const instance = getWrapper().instance();
 			expect(spy).toHaveBeenCalledWith(instance.currentIndex);
 		});
@@ -134,14 +145,19 @@ describe('<Menu/>', () => {
 
 	describe('#getDimensions', () => {
 		it('should get bounds from list container and set this value in `containerBound` property', () => {
-			jest.spyOn(Element.prototype, 'getBoundingClientRect').mockImplementationOnce(() => containerListBound);
+			jest.spyOn(
+				Element.prototype,
+				'getBoundingClientRect'
+			).mockImplementationOnce(() => containerListBound);
 			const instance = getWrapper().instance();
 			instance.getDimensions();
 			expect(instance.containerBound).toBe(instance.containerBound);
 		});
 
 		it('should set value returned from #getIndicatorsPositions in `indicatorPositions` property', () => {
-			const spy = jest.spyOn(Menu.prototype, 'getIndicatorsPositions').mockImplementationOnce(() => indicatorsPositions);
+			const spy = jest
+				.spyOn(Menu.prototype, 'getIndicatorsPositions')
+				.mockImplementationOnce(() => indicatorsPositions);
 			const instance = getWrapper().instance();
 			expect(instance.indicatorsPositions).toEqual(indicatorsPositions);
 			spy.mockRestore();
@@ -150,16 +166,19 @@ describe('<Menu/>', () => {
 
 	describe('#getIndicatorsPositions', () => {
 		it('should return an array of indicators positions', () => {
-			const spy = jest.spyOn(Element.prototype, 'getBoundingClientRect').mockImplementationOnce(() => containerListBound);
+			const spy = jest
+				.spyOn(Element.prototype, 'getBoundingClientRect')
+				.mockImplementationOnce(() => containerListBound);
 			const instance = getWrapper().instance();
 
-			spy
-				.mockImplementationOnce(() => anchorsBounds[0])
+			spy.mockImplementationOnce(() => anchorsBounds[0])
 				.mockImplementationOnce(() => anchorsBounds[1])
 				.mockImplementationOnce(() => anchorsBounds[2])
 				.mockImplementationOnce(() => anchorsBounds[3]);
 
-			expect(instance.getIndicatorsPositions()).toEqual(indicatorsPositions);
+			expect(instance.getIndicatorsPositions()).toEqual(
+				indicatorsPositions
+			);
 		});
 	});
 
@@ -198,8 +217,12 @@ describe('<Menu/>', () => {
 
 			instance.setIndicatorPositionByIndex(index);
 
-			expect(wrapper.state().indicatorLeft).toBe(indicatorsPositions[index].indicatorLeft);
-			expect(wrapper.state().indicatorRight).toBe(indicatorsPositions[index].indicatorRight);
+			expect(wrapper.state().indicatorLeft).toBe(
+				indicatorsPositions[index].indicatorLeft
+			);
+			expect(wrapper.state().indicatorRight).toBe(
+				indicatorsPositions[index].indicatorRight
+			);
 		});
 	});
 
@@ -216,7 +239,9 @@ describe('<Menu/>', () => {
 
 		it('should fix `left` parameter number by container list x axis', () => {
 			const instance = getWrapper().instance();
-			expect(instance.fixAnchorLeftPosition(anchorsBounds[0].left)).toBe(indicatorsPositions[0].indicatorLeft);
+			expect(instance.fixAnchorLeftPosition(anchorsBounds[0].left)).toBe(
+				indicatorsPositions[0].indicatorLeft
+			);
 		});
 	});
 
@@ -233,6 +258,49 @@ describe('<Menu/>', () => {
 			await wrapper.instance().changeAnimationDirection(-1);
 			wrapper.state('isLeftToRight');
 			expect(wrapper.state('isLeftToRight')).toBe(false);
+		});
+	});
+
+	describe('#changeIndicator', () => {
+		it('should call #changeAnimationDirection and #setIndicatorPositionByIndex, and change currentIndex property', async () => {
+			const index = 2;
+			const changeAnimationDirection = jest
+				.spyOn(Menu.prototype, 'changeAnimationDirection')
+				.mockImplementation(() => Promise.resolve(true));
+
+			const setIndicatorPositionByIndex = jest
+				.spyOn(Menu.prototype, 'setIndicatorPositionByIndex')
+				.mockImplementation(() => Promise.resolve(true));
+
+			const instance = getWrapper().instance();
+			await instance.changeIndicator(index);
+
+			expect(changeAnimationDirection).toHaveBeenCalledWith(index);
+			expect(setIndicatorPositionByIndex).toHaveBeenCalledWith(index);
+			expect(instance.currentIndex).toBe(index);
+		});
+	});
+
+	describe('#handleClick', () => {
+		it('should call #changeIndicator and `handleChange` prop', () => {
+			const changeIndicator = jest
+				.spyOn(Menu.prototype, 'changeIndicator')
+				.mockImplementation(() => {});
+
+			const newIndex = 1;
+			const event = {};
+			const handleChange = jest.spyOn(Menu.defaultProps, 'handleChange');
+
+			const wrapper = getWrapper();
+
+			wrapper.instance().handleClick(newIndex, event);
+
+			expect(changeIndicator).toHaveBeenCalledWith(newIndex);
+			expect(handleChange).toHaveBeenCalledWith(
+				wrapper.props().links[newIndex],
+				newIndex,
+				event
+			);
 		});
 	});
 });
