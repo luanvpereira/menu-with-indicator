@@ -60,24 +60,21 @@ const getWrapper = (props = defaultProps) => mount(<Menu {...props} />);
 
 describe('<Menu/>', () => {
 	describe('#componentDidMount', () => {
-		it('should call #init', () => {
-			const spy = jest.spyOn(Menu.prototype, 'init');
-			getWrapper();
-			expect(spy).toHaveBeenCalled();
-		});
+		it('should call #init, #toggleIndicator and #addEventListener', () => {
+			const init = jest.spyOn(Menu.prototype, 'init');
+			const toggleIndicator = jest.spyOn(
+				Menu.prototype,
+				'toggleIndicator'
+			);
+			const addEventListener = jest.spyOn(global, 'addEventListener');
 
-		it('should call #toggleIndicator', () => {
-			const spy = jest.spyOn(Menu.prototype, 'toggleIndicator');
-			getWrapper();
-			expect(spy).toHaveBeenCalled();
-		});
+			const instance = getWrapper().instance();
 
-		it('should call #addEventListener', () => {
-			const spy = jest.spyOn(global, 'addEventListener');
-			const instace = getWrapper().instance();
-			expect(spy).toHaveBeenCalledWith(
+			expect(init).toHaveBeenCalled();
+			expect(toggleIndicator).toHaveBeenCalled();
+			expect(addEventListener).toHaveBeenCalledWith(
 				'resize',
-				instace.debouncedResize,
+				instance.debouncedResize,
 				false
 			);
 		});
@@ -98,19 +95,16 @@ describe('<Menu/>', () => {
 	});
 
 	describe('#init', () => {
-		it('should call #getDimensions', () => {
-			const spy = jest.spyOn(Menu.prototype, 'getDimensions');
-			getWrapper();
-			expect(spy).toHaveBeenCalled();
-		});
-
-		it('should call #setIndicatorPositionByIndex', () => {
-			const spy = jest.spyOn(
+		it('should call #getDimensions and  #setIndicatorPositionByIndex', () => {
+			const getDimensions = jest.spyOn(Menu.prototype, 'getDimensions');
+			const setIndicatorPositionByIndex = jest.spyOn(
 				Menu.prototype,
 				'setIndicatorPositionByIndex'
 			);
-			const instance = getWrapper().instance();
-			expect(spy).toHaveBeenCalledWith(instance.currentIndex);
+
+			getWrapper();
+			expect(getDimensions).toHaveBeenCalled();
+			expect(setIndicatorPositionByIndex).toHaveBeenCalled();
 		});
 	});
 
