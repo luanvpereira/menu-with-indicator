@@ -274,4 +274,31 @@ describe('<Menu/>', () => {
 			);
 		});
 	});
+
+	describe('listeners', () => {
+		it('should call #handleClick when anchor is clicked', () => {
+			const handleClick = jest
+				.spyOn(Menu.prototype, 'handleClick')
+				.mockImplementation(() => true);
+
+			const wrapper = getWrapper();
+
+			wrapper
+				.find('.menuContainer a')
+				.first()
+				.simulate('click');
+
+			expect(handleClick).toHaveBeenCalled();
+			expect(handleClick.mock.calls[0][0]).toBe(0);
+		});
+	});
+
+	describe('#render', () => {
+		it('should render anchors passed by `links` props', () => {
+			const wrapper = getWrapper();
+			expect(wrapper.find('.menuContainer a')).toHaveLength(
+				defaultProps.links.length
+			);
+		});
+	});
 });
